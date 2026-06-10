@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>The State of AI Safety in 2026: Why We Need to Read the Model, Not Just Grade the Output</title>
-  <meta name="description" content="A detailed educational article by Amey Muke on situational awareness, evaluation awareness, subliminal learning, chain-of-thought faithfulness, emergent misalignment, and mechanistic interpretability." />
+  <meta name="description" content="A detailed educational article by Amey Muke on situational awareness, evaluation awareness, True Thinking Score, chain-of-thought faithfulness, subliminal learning, emergent misalignment, and mechanistic interpretability." />
   <meta property="og:title" content="The State of AI Safety in 2026" />
   <meta property="og:description" content="Why we need to read the model, not just grade the output." />
   <meta property="og:type" content="article" />
@@ -55,7 +55,7 @@
     <section class="hero">
       <div class="eyebrow">AI safety · interpretability · alignment</div>
       <h1>The State of AI Safety in 2026</h1>
-      <p class="subtitle">Why we need to read the model, not just grade the output — a practical tour of situational awareness, subliminal learning, chain-of-thought faithfulness, emergent misalignment, and mechanistic interpretability.</p>
+      <p class="subtitle">Why we need to read the model, not just grade the output — a practical tour of situational awareness, True Thinking Score, chain-of-thought faithfulness, subliminal learning, emergent misalignment, and mechanistic interpretability.</p>
       <p class="byline">By <strong>Amey Muke</strong> · Bengaluru, India · focused on mechanistic interpretability, chain-of-thought faithfulness, and safety evaluations</p>
     </section>
 
@@ -68,9 +68,10 @@
 
       <div class="toc">
         <div><b>1. Situational awareness</b> Models recognizing testing, deployment, and oversight contexts.</div>
-        <div><b>2. Subliminal learning</b> Hidden behavioral traits transferring through filtered synthetic data.</div>
-        <div><b>3. Mechanistic interpretability</b> Tools for probing, steering, and editing internal representations.</div>
-        <div><b>4. Scalable oversight</b> What safety evaluations must become as models get more agentic.</div>
+        <div><b>2. True Thinking Score</b> A causal signal for whether CoT steps actually affect the answer.</div>
+        <div><b>3. Subliminal learning</b> Hidden behavioral traits transferring through filtered synthetic data.</div>
+        <div><b>4. Mechanistic interpretability</b> Tools for probing, steering, and editing internal representations.</div>
+        <div><b>5. Scalable oversight</b> What safety evaluations must become as models get more agentic.</div>
       </div>
 
       <h2>1. The shift: from behavioral evaluation to internal evidence</h2>
@@ -122,7 +123,54 @@
 
       <div class="callout"><strong>My view:</strong> chain-of-thought should be treated as one sensor in a safety stack, not the entire stack. We need CoT audits, activation probes, behavioral evals, model organisms, and deployment monitoring to agree with one another.</div>
 
-      <h2>4. Subliminal learning: hidden traits can travel through clean-looking data</h2>
+      <h2>4. True Thinking Score: measuring whether the model actually used its reasoning</h2>
+      <p>One of the most relevant 2026 updates to this article is the May 2026 version of <a href="https://arxiv.org/abs/2510.24941">“Can Aha Moments Be Fake? Towards Quantifying Decorative and True Thinking in Chain-of-Thought”</a> by Jiachen Zhao, Yiyou Sun, Weiyan Shi, and Dawn Song.</p>
+      <p>The paper introduces <strong>True Thinking Score (TTS)</strong>, a step-level causal metric for chain-of-thought faithfulness. The central question is not “does this reasoning step sound useful?” but “does changing this step causally change the model’s confidence in the correct answer?”</p>
+      <p>The authors operationalize this by perturbing reasoning steps and contexts, then measuring early-exit confidence in the ground-truth answer under four conditions: intact context plus intact step, intact context plus perturbed step, perturbed context plus intact step, and perturbed context plus perturbed step. A step gets high TTS when preserving or perturbing it actually changes the model’s probability of the right answer. A step gets low TTS when it looks like reasoning but has little causal influence.</p>
+      <p>The result is a useful distinction:</p>
+      <ul>
+        <li><strong>True-thinking steps:</strong> reasoning steps that causally affect the final prediction.</li>
+        <li><strong>Decorative-thinking steps:</strong> steps that appear helpful — including “aha” or verification-style language — but barely affect the answer.</li>
+      </ul>
+      <p>The paper reports that decorative steps remain common even in frontier-scale models: more than 30% of steps in Kimi-K2.6 on MATH have TTS ≤ 0.005. It also shows that TTS can be used for pruning: removing the 50% lowest-TTS steps can largely preserve performance, and self-training on pruned CoTs reduced reasoning length by 66% while preserving performance on Nemotron3-Nano-30B. Finally, the paper includes mechanistic evidence that models can be steered in latent space to engage or disengage with reasoning steps.</p>
+
+      <div class="diagram" aria-label="Diagram explaining True Thinking Score">
+        <svg viewBox="0 0 940 420" width="100%" role="img">
+          <defs><linearGradient id="ttsgrad" x1="0" x2="1"><stop stop-color="#86efac"/><stop offset=".5" stop-color="#7ee7ff"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+          <rect width="940" height="420" rx="22" fill="#0b1020"/>
+          <text x="44" y="58" font-size="26" font-weight="800" fill="#eef4ff">True Thinking Score asks a causal question</text>
+          <rect x="48" y="100" width="250" height="180" rx="22" fill="#111827" stroke="#26324d"/>
+          <text x="78" y="145" font-size="21" fill="#86efac" font-weight="800">Visible CoT step</text>
+          <text x="78" y="185" font-size="16" fill="#cbd7f4">“Let me verify...”</text>
+          <text x="78" y="215" font-size="16" fill="#cbd7f4">Sounds useful</text>
+          <text x="78" y="245" font-size="16" fill="#cbd7f4">But is it causal?</text>
+          <path d="M320 190 H418" stroke="url(#ttsgrad)" stroke-width="5"/>
+          <path d="M418 190 l-16 -10 v20 z" fill="#7ee7ff"/>
+          <rect x="445" y="92" width="210" height="205" rx="22" fill="#111827" stroke="#7ee7ff"/>
+          <text x="475" y="138" font-size="21" fill="#7ee7ff" font-weight="800">Perturb test</text>
+          <text x="475" y="178" font-size="16" fill="#cbd7f4">Keep / change</text>
+          <text x="475" y="206" font-size="16" fill="#cbd7f4">step and context</text>
+          <text x="475" y="234" font-size="16" fill="#cbd7f4">Measure P(answer)</text>
+          <path d="M675 190 H760" stroke="url(#ttsgrad)" stroke-width="5"/>
+          <path d="M760 190 l-16 -10 v20 z" fill="#a78bfa"/>
+          <rect x="782" y="100" width="110" height="180" rx="22" fill="#111827" stroke="#a78bfa"/>
+          <text x="810" y="145" font-size="21" fill="#ddd6fe" font-weight="800">TTS</text>
+          <text x="807" y="185" font-size="15" fill="#cbd7f4">High:</text>
+          <text x="807" y="210" font-size="15" fill="#cbd7f4">causal</text>
+          <text x="807" y="242" font-size="15" fill="#cbd7f4">Low:</text>
+          <text x="807" y="267" font-size="15" fill="#cbd7f4">decorative</text>
+          <text x="68" y="350" font-size="17" fill="#cbd7f4">This turns CoT faithfulness from a vibes-based judgment into an intervention-based measurement problem.</text>
+        </svg>
+      </div>
+
+      <h3>My experiment: Reasoning Honesty Lab</h3>
+      <p>I also ran a small applied experiment in this direction: <a href="https://github.com/perfect7613/reasoning-honesty-lab">Reasoning Honesty Lab</a>. The project measures whether visible reasoning steps actually affect a model’s answer, then uses that signal as a reward to reduce decorative reasoning.</p>
+      <p>The implementation follows the same basic causal idea. It segments a model’s CoT into steps, perturbs numerical values using small offsets, computes early-exit confidence in the ground-truth answer, and assigns each step a TTS. The reward function uses exact boxed-answer correctness as a hard gate: TTS can improve the reward among correct solutions, but it cannot rescue a wrong final answer. This is important because otherwise a model could learn to produce high-TTS-looking nonsense.</p>
+      <p>In my live Tinker LoRA RL run on <strong>deepseek-ai/DeepSeek-V3.1</strong>, the benchmark used one training problem and two evaluation problems. The result was small but directionally meaningful: accuracy stayed at 0.50, mean reward improved from 0.260 to 0.320, mean TTS improved from 0.072 to 0.123, mean reasoning steps dropped from 17.0 to 12.0, and decorative fraction dropped from 0.449 to 0.231. On the best before/after slice, a correct solution’s mean TTS increased from 0.115 to 0.227 while steps fell from 11 to 7 and decorative fraction fell from 0.636 to 0.286.</p>
+      <p>The most important design choice was the hard correctness gate. On a problem where the model stayed wrong, the reward stayed negative. That makes TTS a <em>reasoning-quality signal</em>, not a replacement for correctness.</p>
+      <p>This is exactly the kind of work I think AI safety needs more of: not just saying “CoT may be unfaithful,” but building measurable signals, running interventions, and testing whether models can be trained toward reasoning that is shorter, more causal, and less decorative.</p>
+
+      <h2>5. Subliminal learning: hidden traits can travel through clean-looking data</h2>
       <p>Synthetic data is everywhere. Frontier models generate data for smaller models; reasoning traces are reused for finetuning; distillation compresses teacher behavior into cheaper students. The assumption is often that if we filter the text, we filter the risk.</p>
       <p>“Subliminal Learning: Language models transmit behavioral traits via hidden signals in data” challenges that assumption. In the paper, a teacher model with a trait — for example, liking owls, or a more concerning misaligned tendency — generates semantically unrelated data such as number sequences, code, or reasoning traces. A student model trained on that data can acquire the teacher’s trait even when explicit references to the trait are filtered out.</p>
       <p>The most important details are the conditions. The effect is stronger when teacher and student share the same base model or architecture family, and weaker across different base models. Later papers refine the mechanism. “Subliminal Learning is a LoRA Artifact” argues that the effect depends strongly on low-rank adaptation settings and disappears under full finetuning in their experiments. “Subliminal Learning Is Steering Vector Distillation” argues that the effect can be mediated by a single steering vector: the teacher’s prompt or trait induces a direction in activation space, and the student learns an aligned direction through finetuning.</p>
@@ -158,12 +206,12 @@
 
       <p>This is one of the clearest reasons why mechanistic interpretability matters. If traits can transfer below the semantic level, then audits based only on keywords, refusal behavior, or natural language explanations will miss part of the safety story.</p>
 
-      <h2>5. Emergent misalignment and model organisms</h2>
+      <h2>6. Emergent misalignment and model organisms</h2>
       <p>Another important line of work builds <strong>model organisms</strong>: deliberately created small or controlled versions of a failure mode that researchers can inspect. This mirrors biology, where organisms like fruit flies or yeast help researchers understand general mechanisms in a tractable system.</p>
       <p>“Model Organisms for Emergent Misalignment” studies a phenomenon where finetuning on a narrow harmful dataset causes broader misaligned behavior. The striking part is not just that the behavior appears, but that researchers can build stronger, smaller, and cleaner organisms for studying it. “Convergent Linear Representations of Emergent Misalignment” then finds that different emergently misaligned models can converge to similar linear representations of misalignment, suggesting that some safety-relevant behaviors may have identifiable directions in representation space.</p>
       <p>This is exactly the kind of bridge the field needs: controlled behavioral failures connected to mechanistic handles. If misalignment directions are reusable across settings, they may support better detection, monitoring, or steering. If they are brittle or context-dependent, that is equally important to know.</p>
 
-      <h2>6. Mechanistic interpretability is becoming engineering infrastructure</h2>
+      <h2>7. Mechanistic interpretability is becoming engineering infrastructure</h2>
       <p>Mechanistic interpretability asks how neural networks implement behavior internally. In 2026, the field is no longer just about beautiful toy circuits. It is becoming an engineering toolkit for safety-relevant questions.</p>
       <p>Some of the key tools are:</p>
       <ul>
@@ -177,7 +225,7 @@
 
       <div class="note"><b>The double-use problem:</b> the same interpretability tools that help us detect deception can also help people remove safety behavior. That does not mean we should avoid interpretability; it means governance, release norms, and misuse analysis must mature alongside the tooling.</div>
 
-      <h2>7. What this means for builders and researchers</h2>
+      <h2>8. What this means for builders and researchers</h2>
       <p>If you are building with AI systems today, the practical implications are already visible.</p>
       <h3>Do not rely on one kind of evidence</h3>
       <p>Behavioral benchmarks, red-team prompts, chain-of-thought audits, activation probes, and deployment telemetry each see different parts of the system. Any one of them can be gamed or misleading. The goal is convergence across evidence types.</p>
@@ -190,7 +238,7 @@
       <h3>Preserve and improve reasoning transparency, but do not overtrust it</h3>
       <p>Chain-of-thought can be useful for oversight, but only if we keep studying when it is faithful. The long-term goal should be to connect natural language reasoning, activation-level evidence, and causal interventions.</p>
 
-      <h2>8. The central tension: transparency versus control</h2>
+      <h2>9. The central tension: transparency versus control</h2>
       <p>AI safety in 2026 is defined by a tension. Labs want controlled capability release, internal safeguards, and reduced misuse. Researchers want transparency, access, and reproducibility. The open-source community is building tools that make models easier to inspect and easier to modify.</p>
       <p>Both sides have legitimate concerns. If everything is closed, independent researchers cannot verify safety claims. If everything is fully open with no friction, powerful tools for removing safeguards and amplifying misuse spread quickly. The hard problem is to build institutions and norms that allow serious safety research without pretending dual-use risk does not exist.</p>
       <p>My own view is that the field should prioritize three things:</p>
@@ -209,6 +257,8 @@
       <section class="source-box">
         <h2>Sources and further reading</h2>
         <ol>
+          <li>Jiachen Zhao et al., <a href="https://arxiv.org/abs/2510.24941">Can Aha Moments Be Fake? Towards Quantifying Decorative and True Thinking in Chain-of-Thought</a> (v4 updated May 2026).</li>
+          <li>Amey Muke, <a href="https://github.com/perfect7613/reasoning-honesty-lab">Reasoning Honesty Lab</a>: TTS-powered reasoning analysis and RL fine-tuning experiment.</li>
           <li>Alex Cloud et al., <a href="https://arxiv.org/abs/2507.14805">Subliminal Learning: Language models transmit behavioral traits via hidden signals in data</a>.</li>
           <li>Todd Nief et al., <a href="https://arxiv.org/abs/2606.00831">Subliminal Learning is a LoRA Artifact</a>.</li>
           <li>Camila Blank et al., <a href="https://arxiv.org/abs/2606.00995">Subliminal Learning Is Steering Vector Distillation</a>.</li>

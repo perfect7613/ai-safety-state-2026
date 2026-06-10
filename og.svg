@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="70%">
+      <stop offset="0%" stop-color="#26346f"/>
+      <stop offset="45%" stop-color="#0e1631"/>
+      <stop offset="100%" stop-color="#050713"/>
+    </radialGradient>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#84f7ff"/>
+      <stop offset="50%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="7" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <g opacity="0.35" stroke="#8eeaff" stroke-width="1">
+    <path d="M110 720 C330 510, 420 620, 620 390 S1040 210, 1460 160" fill="none"/>
+    <path d="M160 210 C350 330, 480 260, 690 420 S1050 710, 1470 610" fill="none"/>
+    <path d="M240 780 C500 690, 610 490, 850 510 S1130 400, 1410 240" fill="none"/>
+  </g>
+  <g filter="url(#glow)">
+    <circle cx="315" cy="310" r="62" fill="#11182f" stroke="url(#g1)" stroke-width="4"/>
+    <circle cx="565" cy="230" r="42" fill="#11182f" stroke="#84f7ff" stroke-width="3"/>
+    <circle cx="760" cy="445" r="86" fill="#11182f" stroke="url(#g1)" stroke-width="4"/>
+    <circle cx="1035" cy="350" r="52" fill="#11182f" stroke="#a78bfa" stroke-width="3"/>
+    <circle cx="1265" cy="565" r="72" fill="#11182f" stroke="#f472b6" stroke-width="4"/>
+    <line x1="315" y1="310" x2="565" y2="230" stroke="url(#g1)" stroke-width="5" opacity="0.8"/>
+    <line x1="565" y1="230" x2="760" y2="445" stroke="url(#g1)" stroke-width="5" opacity="0.8"/>
+    <line x1="760" y1="445" x2="1035" y2="350" stroke="url(#g1)" stroke-width="5" opacity="0.8"/>
+    <line x1="1035" y1="350" x2="1265" y2="565" stroke="url(#g1)" stroke-width="5" opacity="0.8"/>
+  </g>
+  <text x="110" y="145" fill="#eaf2ff" font-family="Inter, Arial, sans-serif" font-size="66" font-weight="800">The State of AI Safety in 2026</text>
+  <text x="112" y="218" fill="#b8c7ff" font-family="Inter, Arial, sans-serif" font-size="34">Why we need to read the model, not just grade the output</text>
+  <g font-family="Inter, Arial, sans-serif" font-size="28" fill="#eaf2ff">
+    <rect x="110" y="650" width="360" height="74" rx="24" fill="#11182f" stroke="#84f7ff" opacity="0.92"/>
+    <text x="142" y="698">Situational awareness</text>
+    <rect x="515" y="650" width="315" height="74" rx="24" fill="#11182f" stroke="#a78bfa" opacity="0.92"/>
+    <text x="548" y="698">Subliminal learning</text>
+    <rect x="875" y="650" width="410" height="74" rx="24" fill="#11182f" stroke="#f472b6" opacity="0.92"/>
+    <text x="908" y="698">Mechanistic interpretability</text>
+  </g>
+  <text x="112" y="810" fill="#9fb0d9" font-family="Inter, Arial, sans-serif" font-size="25">By Amey Muke</text>
+</svg>
